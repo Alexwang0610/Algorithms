@@ -259,16 +259,6 @@ public class TreeNode {
      * @param root
      */
     public void flatten(TreeNode root) {
-        // TreeNode dummyNode = root;
-        // ArrayList<Integer> list = new ArrayList<>();
-        // preOrder(dummyNode,list);
-        //
-        // for (int i = 1; i < list.size(); i++) {
-        // TreeNode temp = new TreeNode(list.get(i));
-        // dummyNode.right = temp;
-        // dummyNode.left = null;
-        // dummyNode = dummyNode.right;
-        // }
         TreeNode curr = root;
         // 遍历二叉树
         while (curr != null) {
@@ -407,16 +397,9 @@ public class TreeNode {
     public boolean leafSimilar(TreeNode root1, TreeNode root2) {
         List<Integer> list1 = new ArrayList<>();
         List<Integer> list2 = new ArrayList<>();
-        leafDFS(root, list1);
-        leafDFS(root, list2);
-        if (list1.size() != list2.size())
-            return false;
-        for (int i = 0; i < list1.size(); i++) {
-            if (list1.get(i) != list2.get(i)) {
-                return false;
-            }
-        }
-        return true;
+        leafDFS(root1, list1);
+        leafDFS(root2, list2);
+        return list1.equals(list2);
     }
 
     private void leafDFS(TreeNode root, List<Integer> list) {
@@ -424,19 +407,19 @@ public class TreeNode {
             list.add(root.val);
             return;
         }
-        if (root.right == null) {
+        if (root.left != null) {
             leafDFS(root.left, list);
         }
-        if (root.left == null) {
+        if (root.right != null) {
             leafDFS(root.right, list);
         }
     }
 
     public static void main(String[] args) {
         TreeNode root1 = new TreeNode();
-        root1 = root1.buildTree("[3,5,1,6,2,9,8,null,null,7,4]");
+        root1 = root1.buildTree("[1,2,3]");
         TreeNode root2 = new TreeNode();
-        root2 = root2.buildTree("[3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]");
-        System.out.println(root.leafSimilar(root1, root2));
+        root2 = root2.buildTree("[1,3,2]");
+        System.out.println(root2.leafSimilar(root1, root2));
     }
 }

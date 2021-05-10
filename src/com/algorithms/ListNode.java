@@ -340,8 +340,10 @@ public class ListNode {
         ListNode slow = cycle;
         ListNode fast = head;
         while (slow != fast) {
-
+            slow = slow.next;
+            fast = fast.next.next;
         }
+        return slow;
     }
 
     private ListNode isCycle(ListNode head) {
