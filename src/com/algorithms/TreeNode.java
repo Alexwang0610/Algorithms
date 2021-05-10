@@ -397,9 +397,46 @@ public class TreeNode {
         return Math.max(left, right) + 1;
     }
 
+    /**
+     * 叶子节点相似的树
+     * 
+     * @param root1
+     * @param root2
+     * @return
+     */
+    public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        List<Integer> list1 = new ArrayList<>();
+        List<Integer> list2 = new ArrayList<>();
+        leafDFS(root, list1);
+        leafDFS(root, list2);
+        if (list1.size() != list2.size())
+            return false;
+        for (int i = 0; i < list1.size(); i++) {
+            if (list1.get(i) != list2.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void leafDFS(TreeNode root, List<Integer> list) {
+        if (root.left == null && root.right == null) {
+            list.add(root.val);
+            return;
+        }
+        if (root.right == null) {
+            leafDFS(root.left, list);
+        }
+        if (root.left == null) {
+            leafDFS(root.right, list);
+        }
+    }
+
     public static void main(String[] args) {
-        TreeNode root = new TreeNode();
-        root = root.buildTree("[1,2,3,4,5,null,null,null,null]");
-        System.out.println(root.diameterOfBinaryTree(root));
+        TreeNode root1 = new TreeNode();
+        root1 = root1.buildTree("[3,5,1,6,2,9,8,null,null,7,4]");
+        TreeNode root2 = new TreeNode();
+        root2 = root2.buildTree("[3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]");
+        System.out.println(root.leafSimilar(root1, root2));
     }
 }
