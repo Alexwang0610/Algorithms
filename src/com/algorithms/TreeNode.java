@@ -415,11 +415,34 @@ public class TreeNode {
         }
     }
 
+    /**
+     * 最近的公共祖先
+     * 
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        // 如果root为空，说明已经遍历到叶节点了，如果root为p，q直接由此向上回溯
+        if (root == null || root == p || root == q)
+            return root;
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left == null && right == null)
+            return null; // 1.如果左右都为空，说明不存在要找的节点
+        if (left == null)
+            return right; // 3.如果左为空，右不为空，说明p，q不在左子树中，返回right
+        if (right == null)
+            return left; // 4.如果右为空，左不为空，说明p，q不在右子树中，返回left
+        return root; // 2. left和right都不为空，说明当前节点就是最近公共祖先
+    }
+
     public static void main(String[] args) {
         TreeNode root1 = new TreeNode();
-        root1 = root1.buildTree("[1,2,3]");
-        TreeNode root2 = new TreeNode();
-        root2 = root2.buildTree("[1,3,2]");
-        System.out.println(root2.leafSimilar(root1, root2));
+        root1 = root1.buildTree("[3,5,1,6,2,0,8,null,null,7,4]");
+        TreeNode p = new TreeNode(5);
+        TreeNode q = new TreeNode(1);
+        System.out.println(root1.lowestCommonAncestor(root1, p, q));
     }
 }

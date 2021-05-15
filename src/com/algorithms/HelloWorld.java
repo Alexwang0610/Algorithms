@@ -1342,6 +1342,292 @@ public class HelloWorld {
     }
 
     /**
+     * 给你一个整数数组 perm ，它是前 n 个正整数的排列，且 n 是个 奇数 。
+     * 
+     * 它被加密成另一个长度为 n - 1 的整数数组 encoded ，满足 encoded[i] = perm[i] XOR perm[i +
+     * 1] 。比方说，如果 perm = [1,3,2] ，那么 encoded = [2,1] 。
+     * 
+     * @param encoded
+     * @return
+     */
+    public int[] decode(int[] encoded) {
+        int n = encoded.length + 1;
+        int total = 0;
+        for (int i = 1; i <= n; i++) {
+            total ^= i;
+        }
+        int odd = 0;
+        for (int i = 1; i < n - 1; i += 2) {
+            odd ^= encoded[i];
+        }
+        int[] perm = new int[n];
+        perm[0] = total ^ odd;
+        for (int i = 0; i < n - 1; i++) {
+            perm[i + 1] = perm[i] ^ encoded[i];
+        }
+        return perm;
+    }
+
+    /**
+     * 有一个正整数数组 arr，现给你一个对应的查询数组 queries，其中 queries[i] = [Li, Ri]。
+     * 
+     * 对于每个查询 i，请你计算从 Li 到 Ri 的 XOR 值（即 arr[Li] xor arr[Li+1] xor ... xor
+     * arr[Ri]）作为本次查询的结果。
+     * 
+     * 并返回一个包含给定查询 queries 所有结果的数组。
+     * 
+     * 输入：arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]] 输出：[2,7,14,8]
+     * 
+     * @param arr
+     * @param queries
+     * @return
+     */
+    public int[] xorQueries(int[] arr, int[][] queries) {
+        int m = queries.length;
+        int[] res = new int[m];
+        for (int i = 0; i < m; i++) {
+            xorCal(arr, queries[i][0], queries[i][1], res, i);
+        }
+        return res;
+    }
+
+    /**
+     * 计算异或运算
+     * 
+     * @param arr 计算异或运算的数组
+     * @param i   开始下标
+     * @param j   结束下标
+     * @param res 存储的结果数组
+     * @param cur 当前的位置
+     */
+    private void xorCal(int[] arr, int i, int j, int[] res, int cur) {
+        int xor = 0;
+        for (int k = i; k <= j; k++) {
+            xor = arr[k] ^ xor;
+        }
+        res[cur] = xor;
+    }
+
+    /**
+     * 乘积最大子数组
+     * 
+     * 给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+     * 
+     * 1.分解子问题 dp[i]
+     * 
+     * 2.状态定义
+     * 
+     * 3.DP方程
+     * 
+     * @param nums
+     * @return
+     */
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        if (n == 1)
+            return nums[0];
+        int[] dpMax = new int[n + 1];
+        int[] dpMin = new int[n + 1];
+        dpMax[0] = nums[0];
+        int max = dpMax[0];
+        for (int i = 1; i < n; i++) {
+            dpMax[i] = Math.max(Math.max(dpMax[i - 1] * nums[i], dpMin[i - 1] * nums[i]), nums[i]);
+            dpMin[i] = Math.min(Math.min(dpMax[i - 1] * nums[i], dpMin[i - 1] * nums[i]), nums[i]);
+            max = Math.max(Math.max(dpMin[i], dpMax[i]), max);
+        }
+        return max;
+    }
+
+    /**
+     * 岛屿数量
+     * 
+     * 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+     * 
+     * 岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+     * 
+     * 此外，你可以假设该网格的四条边均被水包围。
+     * 
+     * @param grid
+     * @return
+     */
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        int m = grid.length;
+        int n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '0') {
+                    continue;
+                }
+                count += isLand(grid, m, n, i, j);
+            }
+        }
+        return count;
+    }
+
+    private int isLand(char[][] grid, int m, int n, int x, int y) {
+        int[][] dir = { { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 } };
+        int count = 1;
+        grid[x][y] = '0';
+        for (int i = 0; i < dir.length; i++) {
+            int dirX = x + dir[i][0], dirY = y + dir[i][1];
+            if (dirX < m && dirX >= 0 && dirY >= 0 && dirY < n && grid[dirX][dirY] == '1') {
+                grid[dirX][dirY] = '0';
+                isLand(grid, m, n, dirX, dirY);
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 
+     * 有一个长度为 arrLen 的数组，开始有一个指针在索引 0 处。
+     * 
+     * 每一步操作中，你可以将指针向左或向右移动 1 步，或者停在原地（指针不能被移动到数组范围外）。
+     * 
+     * 给你两个整数 steps 和 arrLen ，请你计算并返回：在恰好执行 steps 次操作以后，指针仍然指向索引 0 处的方案数。
+     * 
+     * 由于答案可能会很大，请返回方案数 模 10^9 + 7 后的结果。
+     * 
+     * 
+     * @param steps
+     * @param arrLen
+     * @return
+     */
+    public int numWays(int steps, int arrLen) {
+        final int MODULO = 1000000007;
+        int maxColumn = Math.min(arrLen - 1, steps);
+        // dp[i][j]表示在 i 步操作之后，指针位于下标 j 的方案数
+        int[][] dp = new int[steps + 1][maxColumn + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= steps; i++) {
+            for (int j = 0; j <= maxColumn; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j - 1 >= 0) {
+                    dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % MODULO;
+                }
+                if (j + 1 <= maxColumn) {
+                    dp[i][j] = (dp[i][j] + dp[i - 1][j + 1]) % MODULO;
+                }
+            }
+        }
+        return dp[steps][0];
+    }
+
+    /**
+     * 
+     * 你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+     * 
+     * 在选修某些课程之前需要一些先修课程。 先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi]
+     * ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+     * 
+     * 例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。 请你判断是否可能完成所有课程的学习？如果可以，返回 true
+     * ；否则，返回 false 。
+     * 
+     * 
+     * @param numCourses
+     * @param prerequisites
+     * @return
+     */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < prerequisites.length; i++) {
+            map.put(prerequisites[i][0], prerequisites[i][1]);
+        }
+        return false;
+    }
+
+    /**
+     * 整数转罗马数字
+     * 
+     * @param num
+     * @return
+     */
+    public String intToRoman(int num) {
+        // 把阿拉伯数字与罗马数字可能出现的所有情况和对应关系，放在两个数组中，并且按照阿拉伯数字的大小降序排列
+        int[] nums = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+        String[] romans = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+        StringBuilder stringBuilder = new StringBuilder();
+        int index = 0;
+        while (index < 13) {
+            // 特别注意：这里是等号
+            while (num >= nums[index]) {
+                stringBuilder.append(romans[index]);
+                num -= nums[index];
+            }
+            index++;
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 罗马数字转整数
+     * 
+     * @param s
+     * @return
+     */
+    public int romanToInt(String s) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put('M', 1000);
+        map.put('D', 500);
+        map.put('C', 100);
+        map.put('L', 50);
+        map.put('X', 10);
+        map.put('V', 5);
+        map.put('I', 1);
+        int res = 0;
+        int preNum = map.get(s.charAt(0));
+        for (int i = 1; i < s.length(); i++) {
+            int num = map.get(s.charAt(i));
+            if (preNum < num) {
+                res -= preNum;
+            } else {
+                res += preNum;
+            }
+            preNum = num;
+        }
+        res += preNum;
+        return res;
+    }
+
+    /**
+     * 除自身以外数组的乘积
+     * 
+     * @param nums
+     * @return
+     */
+    public int[] productExceptSelf(int[] nums) {
+        int length = nums.length;
+
+        // L 和 R 分别表示左右两侧的乘积列表
+        int[] L = new int[length];
+        int[] R = new int[length];
+
+        int[] answer = new int[length];
+
+        // L[i] 为索引 i 左侧所有元素的乘积
+        // 对于索引为 '0' 的元素，因为左侧没有元素，所以 L[0] = 1
+        L[0] = 1;
+        for (int i = 1; i < length; i++) {
+            L[i] = nums[i - 1] * L[i - 1];
+        }
+
+        // R[i] 为索引 i 右侧所有元素的乘积
+        // 对于索引为 'length-1' 的元素，因为右侧没有元素，所以 R[length-1] = 1
+        R[length - 1] = 1;
+        for (int i = length - 2; i >= 0; i--) {
+            R[i] = nums[i + 1] * R[i + 1];
+        }
+
+        // 对于索引 i，除 nums[i] 之外其余各元素的乘积就是左侧所有元素的乘积乘以右侧所有元素的乘积
+        for (int i = 0; i < length; i++) {
+            answer[i] = L[i] * R[i];
+        }
+
+        return answer;
+    }
+
+    /**
      * 数组交换方法
      * 
      * @param arr 要交换的数组
@@ -1371,11 +1657,10 @@ public class HelloWorld {
     public static void main(String[] args) {
         HelloWorld hw = new HelloWorld();
         System.out.println("hello world!");
-        int[][] grid = { { 1, 4, 8, 6, 2, 2, 1, 7 }, { 4, 7, 3, 1, 4, 5, 5, 1 }, { 8, 8, 2, 1, 1, 8, 0, 1 },
-                { 8, 9, 2, 9, 8, 0, 8, 9 }, { 5, 7, 5, 7, 1, 8, 5, 5 }, { 7, 0, 9, 4, 5, 6, 5, 6 },
-                { 4, 9, 9, 7, 9, 1, 9, 0 }, { 8, 8, 2, 1, 1, 8, 0, 1 } };
-        int[] arr = { 3, 4, 2 };
-        System.out.println(hw.isPalindrome("A man, a plan, a canal: Panama"));
+        char[][] grid = { { '1', '1', '1', '1', '0' }, { '1', '1', '0', '1', '0' }, { '1', '1', '0', '0', '0' },
+                { '0', '0', '0', '0', '0' } };
+        int[] arr = { 1, 2, 3, 4 };
+        hw.print(hw.productExceptSelf(arr));
     }
 }
 

@@ -1,6 +1,10 @@
 package com.algorithms;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public class ListNode {
     int val;
@@ -350,7 +354,7 @@ public class ListNode {
         ListNode slow = head;
         ListNode fast = head;
 
-        while (fast != null && fast.next.next != null) {
+        while (fast != null && fast.next != null) {
             if (fast == slow) {
                 return slow;
             }
@@ -360,10 +364,46 @@ public class ListNode {
         return null;
     }
 
+    /**
+     * 排序链表
+     * 
+     * @param head
+     * @return
+     */
+    public ListNode sortList(ListNode head) {
+        // 边界条件
+        if (head == null || head.next == null)
+            return head;
+        ListNode fast = head.next, slow = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        ListNode tmp = slow.next;
+        slow.next = null;
+        ListNode left = sortList(head);
+        ListNode right = sortList(tmp);
+        ListNode h = new ListNode(0);
+        ListNode res = h;
+        while (left != null && right != null) {
+            if (left.val < right.val) {
+                h.next = left;
+                left = left.next;
+            } else {
+                h.next = right;
+                right = right.next;
+            }
+            h = h.next;
+        }
+        h.next = left != null ? left : right;
+        return res.next;
+    }
+
     public static void main(String[] args) {
-        int[] arr = { 1, 3, 2, 1 };
+        ListNode node = new ListNode();
+        int[] arr = { 4, 3, 2, 1, 3 };
         ListNode head = new ListNode(arr);
         print(head);
-        System.out.println(isPalindrome(head));
+        print(node.sortList(head));
     }
 }
