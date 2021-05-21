@@ -1628,6 +1628,149 @@ public class HelloWorld {
     }
 
     /**
+     * 矩阵搜索
+     * 
+     * @param matrix
+     * @param target
+     * @return
+     */
+    public boolean searchMatrix(int[][] matrix, int target) {
+        // 从左下角开始比较
+        int row = matrix.length - 1;
+        int col = 0;
+        System.out.println(Math.sqrt(12));
+        while (row >= 0 && col < matrix[0].length) {
+            // 如果相等直接返回true
+            if (matrix[row][col] == target) {
+                return true;
+            }
+            // 如果大于target向上搜索，否则向右搜索
+            if (matrix[row][col] > target) {
+                row--;
+            } else {
+                col++;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 完全平方数，返回完全平方数最少的数量
+     * 
+     * @param n
+     * @return
+     */
+    public int numSquares(int n) {
+        if (n == 1)
+            return 1;
+        int[] squares = getSquares(n);
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        for (int square : squares) {
+            System.out.println("square - >" +square);
+        }
+        return dp[n];
+    }
+
+    private int[] getSquares(int n) {
+        int[] res = new int[n];
+        for (int i = 1; i * i <= n; i++) {
+            res[i - 1] = i * i;
+        }
+        return res;
+    }
+
+
+    /**
+     * 零钱兑换问题
+     * 
+     * @param coins
+     * @param amount
+     * @return
+     */
+    public int coinChange(int[] coins, int amount) {
+        int max = amount + 1;
+        int[] dp = new int[amount + 1];
+        // 给数组中所有的值都填上指定的值
+        Arrays.fill(dp, max);
+        dp[0] = 0;
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                // 如果当前的硬币数小于等于金额数
+                if (coins[j] <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
+    /**
+     * 
+     * 现需要从数组中取三个下标 i、j 和 k ，其中 (0 <= i < j <= k < arr.length) 。
+     * 
+     * a 和 b 定义如下：
+     * 
+     * a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1] b = arr[j] ^ arr[j + 1] ^ ... ^
+     * arr[k] 注意：^ 表示 按位异或 操作。
+     * 
+     * 请返回能够令 a == b 成立的三元组 (i, j , k) 的数目。
+     * 
+     * @param arr
+     * @return
+     */
+    public int countTriplets(int[] arr) {
+        int n = arr.length;
+        int[] s = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            s[i + 1] = s[i] ^ arr[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                for (int k = j; k < n; ++k) {
+                    if (s[i] == s[k + 1]) {
+                        ++ans;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 不相交的线
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int maxUncrossedLines(int[] nums1, int[] nums2) {
+        int m = nums1.length, n = nums2.length;
+        // dp[i][j]表示前i，j个数中最多的不相交线的条数
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 0;
+        }
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = 0;
+        }
+        for (int i = 1; i < m; i++) {
+            int num1 = nums1[i - 1];
+            for (int j = 1; j < n; j++) {
+                int num2 = nums2[j - 1];
+                // 如果两个数相等，则说明存在一条线，当前的条数为dp[i - 1][j - 1] + 1;
+                if (num1 == num2) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    // 如果不相等，则为i-1，j或者i，j-1的最大值
+                    dp[i][j] = Math.max(dp[i - 1][j],dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /**
      * 数组交换方法
      * 
      * @param arr 要交换的数组
@@ -1657,10 +1800,10 @@ public class HelloWorld {
     public static void main(String[] args) {
         HelloWorld hw = new HelloWorld();
         System.out.println("hello world!");
-        char[][] grid = { { '1', '1', '1', '1', '0' }, { '1', '1', '0', '1', '0' }, { '1', '1', '0', '0', '0' },
-                { '0', '0', '0', '0', '0' } };
+        int[][] matrix = { { 1, 4, 7, 11, 15 }, { 2, 5, 8, 12, 19 }, { 3, 6, 9, 16, 22 }, { 10, 13, 14, 17, 24 },
+                { 18, 21, 23, 26, 30 } };
         int[] arr = { 1, 2, 3, 4 };
-        hw.print(hw.productExceptSelf(arr));
+        System.out.println(hw.numSquares(25));
     }
 }
 
